@@ -1,0 +1,96 @@
+---
+name: implement-loop
+description: |
+  Process a batch of work items: implement each via a TDD subagent, review
+  via a reviewer subagent, fix until clean, then create a PR.
+
+  Use when the user says "implement these issues", "process this queue",
+  "agentic loop", or passes a list of items to implement. User-invoked only.
+disable-model-invocation: true
+---
+
+# Implementation Loop
+
+A disciplined agentic loop for implementing work items one at a time:
+**implement → review → fix → PR**. Every change goes through a subagent;
+the main agent never edits code during the loop.
+
+## 0. Setup
+
+- Read the items from wherever the user's issue tracker lives (the user
+  tells you where — GitHub Issues, GitLab, Linear, a local file, etc.).
+- Identify the spec source per item (the item body IS the spec).
+- Check for dependencies between items — order them so no item depends on
+  unmerged work. Resolve dependencies sequentially; run independent items in
+  parallel with `worktree: true`.
+
+## 1. Implement — delegate to a subagent
+
+Spawn a `worker` subagent (`async: true`) with:
+
+- The full item body (title + description) as the task.
+- `Use /tdd (test-driven development).` at the top of the task.
+- The relevant file paths and code context the subagent needs (current
+  function signatures, API, existing test patterns).
+- A clear list of files the subagent **may** modify vs **must not** touch.
+- The acceptance criteria from the item.
+
+Do not implement yourself. Do not edit files. The subagent is the sole writer.
+
+## 2. Review — delegate to a reviewer
+
+When the implement subagent completes, spawn two `reviewer` subagents in
+sequence (or parallel if the tool allows):
+
+- **Standards review**: full diff against HEAD + code smell baseline (Fowler,
+  Refactoring ch.3). Report per-file findings.
+- **Spec review**: compare the diff against the item description verbatim.
+  Report gaps, scope creep, and wrong implementations.
+
+Both reviewers are read-only. They do not edit code.
+
+## 3. Fix — delegate, never fix directly
+
+If either review finds actionable issues:
+
+1. **Spawn a fresh `worker` subagent** (`async: true`) to fix them. Pass the
+   review findings **verbatim** as task context.
+2. In the task, tell the subagent *which files* to change and *what
+   specifically* to fix (quote the findings). Include the current diff for
+   context.
+3. When the fix subagent completes, go back to **step 2** (re-review).
+4. Exit the loop only when both reviews return **zero actionable findings**.
+
+**Hard rule**: the main agent never edits code during the fix loop. Not
+  formatting, not comments, not one-line renames. Every change goes through a
+  subagent. The only exception: findings classified as purely mechanical
+  (whitespace, typos, comments). Behavioural, structural, or logic changes
+  always delegate.
+
+## 4. PR
+
+When all items pass review:
+
+1. `git checkout -b <branch-name>` (descriptive, e.g. `feat-<issue-number>`)
+2. `git add` the changed files (only what belongs to the task)
+3. `git commit -m "..."` with a conventional commit message referencing the items
+4. `git push origin <branch-name>`
+5. Create a PR using the project's standard tooling (ask the user how).
+6. Close/resolve each completed item in the issue tracker.
+
+## Dependency resolution
+
+- **Sequential**: if item B depends on item A's code, implement A → review A
+  → fix A → merge A (or at least commit A on a shared base) → then implement B.
+  No worktree needed for sequential.
+- **Parallel**: if items are independent, run each through the full
+  implement/review/fix loop in its own git worktree (`worktree: true` on the
+  subagent call). Merge them in dependency order.
+
+## Completion criterion per item
+
+The loop is done with an item when:
+- All acceptance criteria from the item description are met
+- All tests pass (existing + new)
+- A reviewer (Standards + Spec) reports zero actionable findings
+- The item is referenced in a PR or commit
