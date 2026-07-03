@@ -26,7 +26,7 @@ the main agent never edits code during the loop.
 
 ## 1. Implement — delegate to a subagent
 
-Spawn a `worker` subagent (`async: true`) with:
+Spawn a `worker` subagent with `context: "fresh"` (`async: true`) with:
 
 - The full item body (title + description) as the task.
 - `Use /tdd (test-driven development).` at the top of the task.
@@ -37,10 +37,17 @@ Spawn a `worker` subagent (`async: true`) with:
 
 Do not implement yourself. Do not edit files. The subagent is the sole writer.
 
+**Always pass `context: "fresh"`** so the worker starts with a clean context
+window and receives only the information you explicitly include in the task
+string. Inheriting the parent session's context (the default for `fork` agents)
+causes the worker to see unrelated messages, files, and decisions that can
+drift its output — or worse, skip making edits because it hallucinates the
+changes are already applied.
+
 ## 2. Review — delegate to a reviewer
 
-When the implement subagent completes, spawn two `reviewer` subagents in
-sequence (or parallel if the tool allows):
+When the implement subagent completes, spawn two `reviewer` subagents with
+`context: "fresh"` in sequence (or parallel if the tool allows):
 
 - **Standards review**: full diff against HEAD + code smell baseline (Fowler,
   Refactoring ch.3). Report per-file findings.
@@ -49,16 +56,25 @@ sequence (or parallel if the tool allows):
 
 Both reviewers are read-only. They do not edit code.
 
+**Always pass `context: "fresh"`** so each reviewer sees only the diff and
+the review criteria you provide, not the entire chat history. A reviewer that
+inherits the parent session may confuse its mandate with the implementer's or
+the loop manager's.
+
 ## 3. Fix — delegate, never fix directly
 
 If either review finds actionable issues:
 
-1. **Spawn a fresh `worker` subagent** (`async: true`) to fix them. Pass the
-   review findings **verbatim** as task context.
+1. **Spawn a fresh `worker` subagent** with `context: "fresh"` (`async: true`)
+   to fix them. Pass the review findings **verbatim** as task context.
 2. In the task, tell the subagent *which files* to change and *what
    specifically* to fix (quote the findings). Include the current diff for
    context.
-3. When the fix subagent completes, go back to **step 2** (re-review).
+3. **Be explicit in the fix task**: tell the subagent to edit files and run
+   tests. A fix subagent that inherits context may plan without acting —
+   `context: "fresh"` prevents this by forcing you to put every instruction
+   in the task string.
+4. When the fix subagent completes, go back to **step 2** (re-review).
 4. Exit the loop only when both reviews return **zero actionable findings**.
 
 **Hard rule**: the main agent never edits code during the fix loop. Not
