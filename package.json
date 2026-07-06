@@ -4,6 +4,6 @@
   "description": "Pi agent skills collection",
   "keywords": ["pi-package"],
   "pi": {
-    "skills": ["./implement-loop"]
+    "skills": ["./implement-loop", "./tightrope"]
   }
 }
