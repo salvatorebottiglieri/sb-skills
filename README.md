@@ -12,6 +12,18 @@ Process a batch of work items: implement each via a TDD subagent, review via a r
 /skill:implement-loop
 ```
 
+### `tightrope`
+
+Gate code changes against the tightrope between ponytail minimalism and
+engineering soundness — runs `/ponytail-review` and the `review` skill,
+then interprets both reports to resolve or escalate. Pipeline: tension
+check → test → lint → PR gate.
+
+```
+/tightrope [--lean ponytail|engineering] [--skip <stage>] [--intent "..."]
+/tightrope <task description>
+```
+
 ## Install
 
 ### Pi
