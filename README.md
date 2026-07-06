@@ -1,4 +1,4 @@
-# pi-skills
+# sb-skills
 
 My agent skills collection.
 
