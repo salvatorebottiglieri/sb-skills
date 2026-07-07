@@ -51,9 +51,14 @@ When the implement subagent completes, spawn two `reviewer` subagents with
 
 - **Standards review**: full diff against HEAD + code smell baseline (Fowler,
   Refactoring ch.3). Report per-file findings.
-- **Spec review**: compare the diff against the item description verbatim.
-  Report gaps, scope creep, and wrong implementations.
-
+- **Spec review**: compare the diff against the item body verbatim — both
+  the description and the acceptance criteria checklist. For each acceptance
+  criterion (the `- [ ]` list), report whether it is correctly implemented
+  (pass), incorrectly implemented (fail), or not implemented (missing).
+  A criterion counts as "correctly implemented" only if the code demonstrably
+  satisfies it — not if a test for it exists but the logic is wrong. Reference
+  specific lines or test assertions for each claim. Also report any gaps,
+  scope creep, or wrong implementations against the item description.
 Both reviewers are read-only. They do not edit code.
 
 **Always pass `context: "fresh"`** so each reviewer sees only the diff and
