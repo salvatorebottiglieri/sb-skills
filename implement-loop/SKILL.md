@@ -61,7 +61,14 @@ When the implement subagent completes, spawn two `reviewer` subagents with
   scope creep, or wrong implementations against the item description.
 Both reviewers are read-only. They do not edit code.
 
-**Always pass `context: "fresh"`** so each reviewer sees only the diff and
+**Crucial**: pass the **full raw diff** (`git diff` or equivalent) in the
+reviewer's task, verbatim. Do NOT summarise, paraphrase, or excerpt the diff —
+a reviewer that receives only a summary may miss context and produce inaccurate
+findings. If the diff is too large for a single task, split it per file and
+spawn one reviewer per file, or truncate test files (test content is less
+critical than source logic).
+
+**Always use a fresh context** so each reviewer sees only the diff and
 the review criteria you provide, not the entire chat history. A reviewer that
 inherits the parent session may confuse its mandate with the implementer's or
 the loop manager's.
