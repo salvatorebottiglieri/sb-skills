@@ -15,6 +15,8 @@ A disciplined agentic loop for implementing work items one at a time:
 **implement → review → fix → align docs → PR**. Every change goes through a
 subagent; the main agent never edits code during the loop.
 
+> **Agent type mapping**: This skill uses role names ("implement subagent", "reviewer subagent"). Map to your harness's concrete agent types — e.g. in OMP, use `task` for implement and `reviewer` for reviewer.
+
 ## 0. Setup
 
 - Read the items from wherever the user's issue tracker lives (the user
@@ -26,7 +28,7 @@ subagent; the main agent never edits code during the loop.
 
 ## 1. Implement — delegate to a subagent
 
-Spawn a `worker` subagent with `context: "fresh"` (`async: true`) with:
+Spawn an implement subagent with a fresh context window (e.g. `task` in OMP) with:
 
 - The full item body (title + description) as the task.
 - `Use /tdd (test-driven development).` at the top of the task.
@@ -37,12 +39,10 @@ Spawn a `worker` subagent with `context: "fresh"` (`async: true`) with:
 
 Do not implement yourself. Do not edit files. The subagent is the sole writer.
 
-**Always pass `context: "fresh"`** so the worker starts with a clean context
-window and receives only the information you explicitly include in the task
-string. Inheriting the parent session's context (the default for `fork` agents)
-causes the worker to see unrelated messages, files, and decisions that can
-drift its output — or worse, skip making edits because it hallucinates the
-changes are already applied.
+**Always use a fresh context** so the implementer sees only the information you
+explicitly include in the task string. Inheriting the parent session's context
+causes drift — the subagent may hallucinate that changes are already applied
+and skip making edits.
 
 ## 2. Review — delegate to a reviewer
 
@@ -70,8 +70,7 @@ the loop manager's.
 
 If either review finds actionable issues:
 
-1. **Spawn a fresh `worker` subagent** with `context: "fresh"` (`async: true`)
-   to fix them. Pass the review findings **verbatim** as task context.
+1. **Spawn a fresh implement subagent** to fix them. Pass the review findings **verbatim** as task context.
 2. In the task, tell the subagent *which files* to change and *what
    specifically* to fix (quote the findings). Include the current diff for
    context.
@@ -100,8 +99,7 @@ code changes need documentation updates:
    `docs/ARCHITECTURE.md`, `docs/adr/`, or any `*_docs/` directory that maps
    to the changed code.
 3. **Delegate doc updates**: if the diff changes something documented, spawn
-   a `worker` subagent with `context: "fresh"` to:
-   - Read the relevant docs and the code diff.
+   an implement subagent to:
    - Update docs to match the new behaviour.
    - Skip docs that are still accurate — no speculative rewrites.
 4. **No news is good news**: if nothing documented changed, skip this phase
