@@ -14,8 +14,8 @@ code is neither overengineered nor underengineered. It drives a pipeline
 The **tightrope** is the Pareto frontier: the point where making the code more
 minimal would sacrifice engineering quality, and making it more engineered
 would add unnecessary complexity. The agent finds this point by running two
-authoritative tools — `/ponytail-review` for minimalism, and the `review`
-skill's two-axis methodology for engineering soundness — then interprets both
+authoritative tools — `/ponytail-review` for minimalism, and `/code-review`
+(Pocock's two-axis review) for engineering soundness — then interprets both
 reports and decides what to escalate.
 
 When the user invokes `/tightrope`, report the outcome at the end. If the user
@@ -52,9 +52,9 @@ Before the pipeline runs, verify:
 - The work must be **committed** on a branch. The gate validates committed
   history, not uncommitted changes.
 - You must be on a **feature branch**, not the repository's default branch.
-- **Ponytail must be installed.** Run `pi install git:github.com/DietrichGebert/ponytail`
-  if missing. Verify it's available — `/ponytail-review` must be a recognized
-  command. If the installation is missing, install it before proceeding.
+- **Ponytail must be installed.** `ponytail-review` must be a recognized skill
+  (from github.com/DietrichGebert/ponytail — e.g. in `.agents/skills/`). If
+  `/ponytail-review` isn't a recognized command, install it before proceeding.
 
 ## Flags
 
@@ -98,7 +98,7 @@ diff. It returns a structured delete-list with tags: `delete`, `stdlib`,
 `native`, `yagni`, `shrink`, and a net lines-removable count. If the report
 says "Lean already. Ship.", axis A finds nothing to flag.
 
-**Axis B — Engineering soundness.** Run the `review` skill's two-axis
+**Axis B — Engineering soundness.** Run `/code-review`'s two-axis
 methodology (Standards + Spec) against the same diff. It checks documented
 coding standards and Fowler code smells, plus whether the change faithfully
 implements the originating spec or intent.

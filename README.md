@@ -15,7 +15,7 @@ Process a batch of work items: implement each via a TDD subagent, review via a r
 ### `tightrope`
 
 Gate code changes against the tightrope between ponytail minimalism and
-engineering soundness — runs `/ponytail-review` and the `review` skill,
+engineering soundness — runs `/ponytail-review` and `/code-review`,
 then interprets both reports to resolve or escalate. Pipeline: tension
 check → test → lint → PR gate.
 
@@ -50,16 +50,22 @@ check → test → lint → PR gate.
 
 ## Install
 
-### Pi
+### omp
+
+omp reads skills from `~/.agents/skills/`. Copy the skill folders:
 
 ```bash
-pi install git:github.com/salvatorebottiglieri/pi-skills
+cp -r ~/sb-skills/implement-loop ~/sb-skills/product-review \
+      ~/sb-skills/program-design ~/sb-skills/system-architecture \
+      ~/sb-skills/tightrope ~/.agents/skills/
 ```
 
-Or symlink:
+Or symlink them instead, so the repo stays the single source of truth:
 
 ```bash
-ln -s ~/path/to/pi-skills/* ~/.pi/agent/skills/
+ln -s ~/sb-skills/implement-loop ~/sb-skills/product-review \
+      ~/sb-skills/program-design ~/sb-skills/system-architecture \
+      ~/sb-skills/tightrope ~/.agents/skills/
 ```
 
 ### Claude Code
@@ -69,14 +75,11 @@ Symlink the skills you want into `.claude/skills/`:
 ```bash
 # In your project or globally
 mkdir -p ~/.claude/skills
-ln -s ~/path/to/pi-skills/* ~/.claude/skills/
-
-# Or just copy
-cp -r ~/path/to/pi-skills/* ~/.claude/skills/
+ln -s ~/sb-skills/* ~/.claude/skills/
 ```
 
 Or reference them in `CLAUDE.md` / `CLAUDE_GLOBAL.md`:
 
 ```markdown
-See skills in ~/pi-skills/ for reusable workflows.
+See skills in ~/sb-skills/ for reusable workflows.
 ```
