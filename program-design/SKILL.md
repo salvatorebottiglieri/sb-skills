@@ -3,7 +3,7 @@ name: program-design
 description: >
   Produce program design artifacts (call-stack tree, file-tree diff, type
   signatures) for a ticket and append them to the issue on the tracker.
-  Use between /to-issues and implement-loop to give the implement and review
+  Use between /to-tickets and implement-loop to give the implement and review
   subagents a concrete contract before they write code.
 disable-model-invocation: true
 ---
@@ -195,7 +195,7 @@ If the user corrects anything, incorporate the fix and re-append the section
 | **code-review** | The spec-axis reviewer compares the diff against the ticket body, now including the signatures. _"Signature says `createResource(...)`, but the implementation uses `save()` and returns `any`."_ |
 | `codebase-design` | Provides vocabulary (deep module, seam). Program design is the *concrete* application: "the seam is this signature." |
 | `domain-modeling` | Program design uses `CONTEXT.md` vocabulary. If a term is ambiguous, call `domain-modeling`. |
-| `to-issues` | Produces tickets. Program design takes one ticket and adds signatures to it. |
+| `to-tickets` | Produces tickets. Program design takes one ticket and adds signatures to it. |
 | `prototype` | If the shape isn't clear yet, prototype first, then program-design the result. |
 | `improve-codebase-architecture` | If an architectural concern emerges ("this function is in the wrong module"), escalate it — don't resolve it here. |
 

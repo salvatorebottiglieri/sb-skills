@@ -3,7 +3,7 @@ name: system-architecture
 description: >
   Produce architecture diagrams and contracts (Mermaid sequence/state diagrams,
   endpoint contracts, data models) for a PRD and append them to the issue on
-  the tracker. Use between /to-prd and /to-issues to align on how services
+  the tracker. Use between /to-spec and /to-tickets to align on how services
   communicate before breaking work into tickets.
 disable-model-invocation: true
 ---
@@ -236,20 +236,20 @@ ask:
 
 > "The architecture for this PRD is ready. The diagrams and contracts
 > describe how the services communicate. Would you like to modify anything
-> or proceed with to-issues?"
+> or proceed with to-tickets?"
 
 If the user corrects anything, incorporate the fix and re-append the section
 (overwrite the previous one). Only when they approve does the PRD move back
-to `ready-for-agent` — or directly to `to-issues`.
+to `ready-for-agent` — or directly to `to-tickets`.
 
 ## How this feeds other skills
 
 | Skill | Effect |
 |---|---|
-| **to-issues** | Reads the PRD (now with `## System Architecture`) and creates tickets informed by the endpoint contracts and data model. Each ticket inherits its piece of the architecture. |
+| **to-tickets** | Reads the PRD (now with `## System Architecture`) and creates tickets informed by the endpoint contracts and data model. Each ticket inherits its piece of the architecture. |
 | **program-design** | Works one ticket deeper: call-stack tree, file-tree diff, type signatures. The architecture says *which* endpoint, program design says *how*. |
 | **implement-loop** | The implement subagent sees the full ticket body — both architecture context and program design signatures. No separate handoff needed. |
-| `to-prd` | Produces the PRD. System architecture evolves it — adds the `## System Architecture` section. |
+| `to-spec` | Produces the PRD. System architecture evolves it — adds the `## System Architecture` section. |
 | `codebase-design` | Provides vocabulary (deep module, seam). System architecture is a different layer — connections between modules, not depth of one. |
 | `domain-modeling` | Uses `CONTEXT.md` vocabulary. If a term is ambiguous during architecture, call `domain-modeling`. |
 | `improve-codebase-architecture` | If a structural problem emerges ("this service is too coupled"), note it but don't resolve it here. |

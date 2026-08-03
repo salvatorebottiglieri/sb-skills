@@ -30,7 +30,7 @@ check → test → lint → PR gate.
 >
 > Design system architecture for a PRD: produce Mermaid sequence/state
 > diagrams, endpoint contracts, and data models, then append them to the
-> PRD on the tracker. Designed to be used between `/to-prd` and `/to-issues`.
+> PRD on the tracker. Designed to be used between `/to-spec` and `/to-tickets`.
 
 ```
 /system-architecture <prd-number>
@@ -42,7 +42,7 @@ check → test → lint → PR gate.
 >
 > Produce program design artifacts (call-stack tree, file-tree diff, type
 > signatures) for a ticket and append them to the ticket on the tracker.
-> Designed to be used between `/to-issues` and `implement-loop`.
+> Designed to be used between `/to-tickets` and `implement-loop`.
 
 ```
 /program-design <ticket-number>

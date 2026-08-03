@@ -48,7 +48,7 @@ These are the dimensions the agent evaluates, each backed by an installed skill:
 | Architecture | `improve-codebase-architecture`, `codebase-design` | Does the code follow the project's module boundaries and patterns? Is it testable and AI-navigable? Would a deep module be a better design? |
 | Testing | `tdd` | Are tests present for the new behavior? Do they cover edge cases and failure paths, not just the happy path? Are they written first or at least as part of the same change? |
 | Error handling | (built-in engineering judgment) | Are trust boundaries validated? Are errors surfaced, not swallowed? Can the caller distinguish failure modes? Does data-loss prevention exist where relevant? |
-| Specification | `to-prd`, `to-issues` | Does the implementation match what was asked for? Is scope creep visible? Does the diff serve the stated intent, not a different problem? |
+| Specification | `to-spec`, `to-tickets` | Does the implementation match what was asked for? Is scope creep visible? Does the diff serve the stated intent, not a different problem? |
 | Debugging | `diagnose` | If this change fixes a bug, does it fix the root cause (one guard in the shared function) rather than patching only the reported path? |
 | Integrity | `triage` | If this came from an issue, is the acceptance criterion met? Are there unresolved concerns in the issue thread? |
 
