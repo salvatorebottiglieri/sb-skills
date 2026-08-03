@@ -36,6 +36,12 @@ Spawn an implement subagent with a fresh context window (e.g. `task` in OMP). It
   (red-green-refactor, vertical slices, tests at public seams). If a `/tdd`
   skill is available, the subagent will follow it; if not, it relies on its
   own TDD knowledge — the model carries this natively.
+- **Execution order**: instruct the subagent to work **middle-out** — API
+  contract first (define the endpoint signature with a stub handler), then
+  the consumer (frontend, CLI, or caller), then the service layer, then the
+  data layer — testing at each layer. Do **not** work stack-order (DB →
+  services → API → frontend); middle-out keeps every layer independently
+  testable and avoids dead-end schema designs.
 - The relevant file paths and code context the subagent needs (current
   function signatures, API, existing test patterns).
 - A clear list of files the subagent **may** modify vs **must not** touch.

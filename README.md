@@ -24,6 +24,19 @@ check → test → lint → PR gate.
 /tightrope <task description>
 ```
 
+
+### `product-review` ⚠️ WIP
+
+> **Work in progress.** First version, not yet battle-tested.
+>
+> Produce a visual HTML review of a PRD — problem statement, success criteria,
+> and wireframe mockup — to align on what the user sees before designing
+> architecture. Designed to be used between `/to-spec` and `/system-architecture`.
+
+```
+/product-review <prd-number>
+```
+
 ### `system-architecture` ⚠️ WIP
 
 > **Work in progress.** First version, not yet battle-tested.
