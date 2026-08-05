@@ -148,15 +148,15 @@ verified**.
 ````markdown
 ### System invariants
 
-| Invariant (legge) | Negazione → test | Verificato in |
+| Invariant (law) | Negation → test | Verified in |
 |---|---|---|
-| Ogni documento con depth>0 ha un edge `derived_from` | `SELECT … WHERE depth>0 AND NOT EXISTS(edge)` | `tests/invariants/test_provenance.py` |
-| `QuotaExceeded` è sempre 402 con `detail.code` | response != 402 o body senza `code` | `tests/test_billing_api.py` |
-| Documento `failed` ⟺ job `failed` in coda o dead-letter non risolta | mirror-drift tra le due tabelle | `tests/unit/test_processing_queue.py` |
+| Every node with depth>0 has a `derived_from` edge | `SELECT … WHERE depth>0 AND NOT EXISTS(edge)` | `tests/invariants/test_provenance.py` |
+| `QuotaExceeded` is always 402 with `detail.code` | response != 402 or body without `code` | `tests/test_billing_api.py` |
+| Document `failed` ⟺ job `failed` in queue or unresolved dead-letter | mirror drift between the two tables | `tests/unit/test_processing_queue.py` |
 ````
 
 **Rules:**
-- **Law**: a sentence in `CONTEXT.md` vocabulary — "deve sempre essere vero che…".
+- **Law**: a sentence in `CONTEXT.md` vocabulary — "it must always be true that…".
 - **Negation**: the check that fails when the law breaks — the exact query/assertion, not a paraphrase.
 - **Where verified**: the test file that pins it (or "da scrivere in implement-loop").
 - Derive them from the other artifacts: state machine → transition invariants; data model → structural invariants; endpoint contracts → response invariants; domain laws already in ADR/CONTEXT.md → codify them.
@@ -251,7 +251,7 @@ stateDiagram-v2
 
 ### System invariants
 
-| Invariant (legge) | Negazione → test | Verificato in |
+| Invariant (law) | Negation → test | Verified in |
 |---|---|---|
 | … | … | … |
 
