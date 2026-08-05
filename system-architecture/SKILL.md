@@ -48,6 +48,12 @@ Not every feature needs all three artifacts. Classify based on the PRD:
 | Only data (new field, new table, no new orchestration) | Data model only |
 | Only existing patterns (follows existing routes exactly) | Skip — no new architecture needed |
 
+**System invariants** are produced whenever the PRD introduces state
+transitions, a data model, API contracts, or touches domain laws from
+`CONTEXT.md`/ADR — i.e. almost always. They are the properties that must
+hold in every reachable state; they are what makes tests effective (a test
+suite that doesn't pin the invariants verifies scenarios, not laws).
+
 ### 3. Produce artifacts
 
 For each artifact type that fits, produce a draft. Use `CONTEXT.md` vocabulary
@@ -130,6 +136,32 @@ GET /api/resources/:slug
 - Include request shape, response shape, and possible errors.
 - Use the domain types from `CONTEXT.md` — if `Resource` is defined in the glossary, reference it.
 - If the existing API follows a documented pattern (all routes return `{ data }` wrapping), follow it.
+
+#### System invariants
+
+Produce when the feature touches state transitions, data, or API contracts —
+almost always. An invariant is a property that must be true in **every**
+reachable state of the system ("it must always be true that…"), not a
+scenario. State them in the campaign format: **law → negation → where
+verified**.
+
+````markdown
+### System invariants
+
+| Invariant (legge) | Negazione → test | Verificato in |
+|---|---|---|
+| Ogni documento con depth>0 ha un edge `derived_from` | `SELECT … WHERE depth>0 AND NOT EXISTS(edge)` | `tests/invariants/test_provenance.py` |
+| `QuotaExceeded` è sempre 402 con `detail.code` | response != 402 o body senza `code` | `tests/test_billing_api.py` |
+| Documento `failed` ⟺ job `failed` in coda o dead-letter non risolta | mirror-drift tra le due tabelle | `tests/unit/test_processing_queue.py` |
+````
+
+**Rules:**
+- **Law**: a sentence in `CONTEXT.md` vocabulary — "deve sempre essere vero che…".
+- **Negation**: the check that fails when the law breaks — the exact query/assertion, not a paraphrase.
+- **Where verified**: the test file that pins it (or "da scrivere in implement-loop").
+- Derive them from the other artifacts: state machine → transition invariants; data model → structural invariants; endpoint contracts → response invariants; domain laws already in ADR/CONTEXT.md → codify them.
+- **Anti-vacuity**: an invariant whose test cannot fail is an opinion. If no test can pin it, mark it `[non verificabile — opinione]` instead of pretending.
+- Only invariants that can be checked mechanically or by a deterministic test belong here — invariants that need LLM judgment belong in `## Testing Decisions`.
 
 #### Data model
 
@@ -217,6 +249,12 @@ stateDiagram-v2
 ...
 ```
 
+### System invariants
+
+| Invariant (legge) | Negazione → test | Verificato in |
+|---|---|---|
+| … | … | … |
+
 ### Architecture notes
 
 Any non-obvious constraints, migration strategy, integration patterns,
@@ -248,7 +286,7 @@ to `ready-for-agent` — or directly to `to-tickets`.
 |---|---|
 | **to-tickets** | Reads the PRD (now with `## System Architecture`) and creates tickets informed by the endpoint contracts and data model. Each ticket inherits its piece of the architecture. |
 | **program-design** | Works one ticket deeper: call-stack tree, file-tree diff, type signatures. The architecture says *which* endpoint, program design says *how*. |
-| **implement-loop** | The implement subagent sees the full ticket body — both architecture context and program design signatures. No separate handoff needed. |
+| **implement-loop** | The implement subagent sees the full ticket body — architecture context, `## System Invariants`, and program design signatures. The invariants are test contract: their tests are written first (red), then the implementation (green). |
 | `to-spec` | Produces the PRD. System architecture evolves it — adds the `## System Architecture` section. |
 | `codebase-design` | Provides vocabulary (deep module, seam). System architecture is a different layer — connections between modules, not depth of one. |
 | `domain-modeling` | Uses `CONTEXT.md` vocabulary. If a term is ambiguous during architecture, call `domain-modeling`. |

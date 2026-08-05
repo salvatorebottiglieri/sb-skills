@@ -36,6 +36,13 @@ Spawn an implement subagent with a fresh context window (e.g. `task` in OMP). It
   (red-green-refactor, vertical slices, tests at public seams). If a `/tdd`
   skill is available, the subagent will follow it; if not, it relies on its
   own TDD knowledge — the model carries this natively.
+- **Invariants-first** (when the item body contains a `## System Invariants`
+  section, inherited from system-architecture): those invariants are **test
+  contract**. The subagent writes their tests **first** — every invariant's
+  negation as a failing test (red) — then implements until they pass
+  (green). An invariant whose test cannot fail must be flagged back, not
+  silently dropped (anti-vacuity: a check that never fails is worse than no
+  check).
 - **Execution order**: instruct the subagent to work **middle-out** — API
   contract first (define the endpoint signature with a stub handler), then
   the consumer (frontend, CLI, or caller), then the service layer, then the
@@ -66,6 +73,9 @@ When the implement subagent completes, spawn two `reviewer` subagents:
   satisfies it — not if a test for it exists but the logic is wrong. Reference
   specific lines or test assertions for each claim. Also report any gaps,
   scope creep, or wrong implementations against the item description.
+  When the item body has a `## System Invariants` section, additionally
+  verify **invariant coverage**: every invariant has a test pinning its
+  negation, and the test would fail on a violation (not vacuously green).
 
 Both reviewers are read-only — they report findings, they do not edit code.
 
